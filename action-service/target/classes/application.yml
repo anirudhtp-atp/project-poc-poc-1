@@ -4,3 +4,33 @@ spring:
  
 server:
   port: 1010
+  
+
+  
+resilience4j:
+  retry:
+    instances:
+      incidentReportRetry:
+        maxAttempts: 3
+        waitDuration: 500ms
+        retryExceptions:
+          - java.net.ConnectException
+          - java.io.IOException
+          - java.lang.RuntimeException
+      analyticsRetry:
+        maxAttempts: 2
+        waitDuration: 1000ms
+        retryExceptions:
+          - java.net.ConnectException
+          - java.io.IOException
+  circuitbreaker:
+    instances:
+      incidentServiceCB:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        slidingWindowType: COUNT_BASED
+        minimumNumberOfCalls: 5
+        permittedNumberOfCallsInHalfOpenState: 3
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        automaticTransitionFromOpenToHalfOpenEnabled: true
